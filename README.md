@@ -1,6 +1,6 @@
 ![UniPi](http://www.unipi.gr/unipi/templates/universityofpiraeus_2012/images/logo_calibri_en.png)
 # mycrowdcharger-api
-MyCrowdCharger REST api written in Python for MongoDB communication
+MyCrowdCharger REST api written in Python for MongoDB geospatial data exposure to the mobile clients.
 
 # Project Description
 Have you ever been in the position of having no battery in your latest technology smartphone?
