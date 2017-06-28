@@ -2,3 +2,4 @@ yMONGO_HOST = '0.0.0.0'
 MONGO_PORT = 80
 
 DOMAIN = {'people': {}}
+delete
