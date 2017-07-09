@@ -50,5 +50,24 @@ def add_device():
         "contributions": new_device['contributions']}
   return jsonify({'result' : output})
 
+@app.route('/refresh', methods=['POST'])
+def refresh_device():
+  device = mongo.db.devices
+  name = request.json['name']
+  loc = request.json['loc']
+  battery_level = request.json['battery_level']
+
+  saved_device = device.find_one({'name' : name})
+  if saved_device is not None:
+    saved_device['loc'] = loc
+    saved_device['battery_level'] = battery_level
+    device.save(saved_device)
+    new_device = device.find_one({'_id': saved_device['_id'] })
+    output = {'name' : new_device['name'], 'loc' : new_device['loc'], "battery_level": new_device['battery_level'], 
+        "contributions": new_device['contributions']}
+    return jsonify({'result' : output})
+  else:
+    abort(404)
+
 if __name__ == '__main__':
     app.run(debug=True)
