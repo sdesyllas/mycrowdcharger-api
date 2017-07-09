@@ -74,7 +74,7 @@ def refresh_device():
 def get_nearby_devices(name, lon, lat):
   device = mongo.db.devices
   loc = [lon, lat]
-  query = {"loc": SON([("$near", loc), ("$maxDistance", 5)])}
+  query = {"loc": SON([("$near", loc), ("$maxDistance", 10)])}
   output = []
   for doc in device.find(query).limit(10):
     output.append({'name' : doc['name'], 'loc' : doc['loc'], "battery_level": doc['battery_level'], 
