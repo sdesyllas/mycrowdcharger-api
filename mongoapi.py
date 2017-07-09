@@ -70,11 +70,12 @@ def refresh_device():
   else:
     abort(404)
 
-@app.route('/nearby/<name>/<lon>/<lat>', methods=['GET'])
-def get_nearby_devices(name, lon, lat):
+@app.route('/nearby/<lon>/<lat>', methods=['GET'])
+def get_nearby_devices(lon, lat):
   device = mongo.db.devices
-  loc = [lon, lat]
-  query = {"loc": SON([("$near", loc), ("$maxDistance", 10)])}
+  loc = [float(lon), float(lat)]
+  query = {"loc": SON([("$near", loc), ("$maxDistance", 0.1)])}
+  #query = {"loc": SON([("$near", loc)])}
   output = []
   for doc in device.find(query).limit(10):
     output.append({'name' : doc['name'], 'loc' : doc['loc'], "battery_level": doc['battery_level'], 
