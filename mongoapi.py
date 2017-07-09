@@ -1,6 +1,7 @@
 from flask import Flask
 from flask import jsonify
 from flask import request
+from flask import abort
 from flask_pymongo import PyMongo
 from pymongo import GEO2D
 from bson.son import SON
@@ -75,6 +76,22 @@ def get_nearby_devices(lon, lat):
   device = mongo.db.devices
   loc = [float(lon), float(lat)]
   query = {"loc": SON([("$near", loc), ("$maxDistance", 0.1)])}
+  #query = {"loc": SON([("$near", loc)])}
+  output = []
+  for doc in device.find(query).limit(10):
+    output.append({'name' : doc['name'], 'loc' : doc['loc'], "battery_level": doc['battery_level'], 
+      "contributions": doc['contributions']})
+  return jsonify({'result' : output})
+
+@app.route('/getnearesttodevice/<name>', methods=['GET'])
+def get_nearby_devices_by_device_name(name):
+  device = mongo.db.devices
+  new_device = device.find_one({'name': name })
+  if new_device is None:
+    abort(404)
+
+  loc = new_device['loc']
+  query = {"loc": SON([("$near", loc), ("$maxDistance", 0.1)]), "name" : SON([("$ne", name)])}
   #query = {"loc": SON([("$near", loc)])}
   output = []
   for doc in device.find(query).limit(10):
