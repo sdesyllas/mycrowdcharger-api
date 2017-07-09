@@ -71,6 +71,46 @@ def refresh_device():
   else:
     abort(404)
 
+@app.route('/sendbattery', methods=['POST'])
+def send_battery():
+  device = mongo.db.devices
+ 
+  sender = request.json['sender']['name']
+  battery = int(request.json['sender']['battery'])
+  recipient = request.json['recipient']['name']
+  
+  senderdoc = device.find_one({'name' : sender})
+  recipientdoc = device.find_one({'name': recipient})
+  if senderdoc is None:
+    abort(404)
+  if recipient is None:
+    abort(404)
+  
+  sender_battery_level = int(senderdoc['battery_level'])
+  recipient_battery_level = int(recipientdoc['battery_level'])
+  if sender_battery_level < battery:
+    abort(400)
+  senderdoc['battery_level'] = sender_battery_level - battery
+  senderdoc['contributions'] = int(senderdoc['contributions']) + 1
+  if recipient_battery_level + battery <=100:
+    recipientdoc['battery_level'] = recipient_battery_level + battery
+  else:
+    abort(400)
+  device.save(senderdoc)
+  device.save(recipientdoc)
+  
+  updated_sender = device.find_one({'_id' : senderdoc['_id']})
+  updated_recipient = device.find_one({'_id' : recipientdoc['_id']})
+
+  if updated_sender is not None and updated_recipient is not None:
+     sender_output = {'name' : updated_sender['name'], 'loc' : updated_sender['loc'], "battery_level": updated_sender['battery_level'], 
+        "contributions": updated_sender['contributions']}
+     recipient_output = {'name' : updated_recipient['name'], 'loc' : updated_recipient['loc'], "battery_level": updated_recipient['battery_level'], 
+        "contributions": updated_recipient['contributions']}
+     return jsonify({'result_sender' : sender_output, 'result_recipient': recipient_output})
+  else:
+    abort(500)
+
 @app.route('/nearby/<lon>/<lat>', methods=['GET'])
 def get_nearby_devices(lon, lat):
   device = mongo.db.devices
