@@ -83,4 +83,4 @@ def get_nearby_devices(lon, lat):
   return jsonify({'result' : output})
   
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(port=8000, debug=True)
