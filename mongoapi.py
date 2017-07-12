@@ -20,7 +20,7 @@ def get_all_devices():
   output = []
   for s in device.find():
     output.append({'name' : s['name'], 'loc' : s['loc'], "battery_level": s['battery_level'], 
-      "contributions": s['contributions']})
+      "contributions": s['contributions'], "nickname": s['nickname']})
   return jsonify({'result' : output})
 
 @app.route('/device/<name>', methods=['GET'])
@@ -29,7 +29,7 @@ def get_one_device(name):
   s = device.find_one({'name' : name})
   if s:
     output = {'name' : s['name'], 'loc' : s['loc'], "battery_level": s['battery_level'], 
-      "contributions": s['contributions']}
+      "contributions": s['contributions'], "nickname": s['nickname']}
   else:
     output = "No such name"
   return jsonify({'result' : output})
@@ -40,16 +40,17 @@ def add_device():
   device = mongo.db.devices
   name = request.json['name']
   loc = request.json['loc']
+  nickname = request.json['nickname']
   s = device.find_one({'name' : name})
   if s:
     output = "device already registered"
   else:
     battery_level = request.json['battery_level']
     device_id = device.insert({'name': name, 'battery_level': battery_level, 
-      'loc' : loc, "contributions": 1 })
+      'loc' : loc, "contributions": 1, "nickname": nickname })
     new_device = device.find_one({'_id': device_id })
     output = {'name' : new_device['name'], 'loc' : new_device['loc'], "battery_level": new_device['battery_level'], 
-        "contributions": new_device['contributions']}
+        "contributions": new_device['contributions'], "nickname": new_device['nickname']}
   return jsonify({'result' : output})
 
 @app.route('/refresh', methods=['POST'])
@@ -57,6 +58,7 @@ def refresh_device():
   device = mongo.db.devices
   name = request.json['name']
   loc = request.json['loc']
+
   battery_level = request.json['battery_level']
 
   saved_device = device.find_one({'name' : name})
@@ -66,7 +68,7 @@ def refresh_device():
     device.save(saved_device)
     new_device = device.find_one({'_id': saved_device['_id'] })
     output = {'name' : new_device['name'], 'loc' : new_device['loc'], "battery_level": new_device['battery_level'], 
-        "contributions": new_device['contributions']}
+        "contributions": new_device['contributions'], "nickname": new_device['nickname']}
     return jsonify({'result' : output})
   else:
     abort(404)
@@ -104,9 +106,9 @@ def send_battery():
 
   if updated_sender is not None and updated_recipient is not None:
      sender_output = {'name' : updated_sender['name'], 'loc' : updated_sender['loc'], "battery_level": updated_sender['battery_level'], 
-        "contributions": updated_sender['contributions']}
+        "contributions": updated_sender['contributions'], "nickname": updated_sender['nickname']}
      recipient_output = {'name' : updated_recipient['name'], 'loc' : updated_recipient['loc'], "battery_level": updated_recipient['battery_level'], 
-        "contributions": updated_recipient['contributions']}
+        "contributions": updated_recipient['contributions'], "nickname": updated_recipient['nickname']}
      return jsonify({'result_sender' : sender_output, 'result_recipient': recipient_output})
   else:
     abort(500)
@@ -120,7 +122,7 @@ def get_nearby_devices(lon, lat):
   output = []
   for doc in device.find(query).limit(10):
     output.append({'name' : doc['name'], 'loc' : doc['loc'], "battery_level": doc['battery_level'], 
-      "contributions": doc['contributions']})
+      "contributions": doc['contributions'], "nickname": doc['nickname']})
   return jsonify({'result' : output})
 
 @app.route('/getnearesttodevice/<name>', methods=['GET'])
@@ -136,7 +138,7 @@ def get_nearby_devices_by_device_name(name):
   output = []
   for doc in device.find(query).limit(10):
     output.append({'name' : doc['name'], 'loc' : doc['loc'], "battery_level": doc['battery_level'], 
-      "contributions": doc['contributions']})
+      "contributions": doc['contributions'], "nickname": doc['nickname']})
   return jsonify({'result' : output})
   
 if __name__ == '__main__':
