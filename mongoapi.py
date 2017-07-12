@@ -6,6 +6,7 @@ from flask_pymongo import PyMongo
 from pymongo import GEO2D
 from bson.son import SON
 import time
+import sys
 
 app = Flask(__name__)
 with app.app_context():
@@ -17,7 +18,8 @@ with app.app_context():
 @app.route('/ping', methods=['GET'])
 def ping_service():
   output = {'service' : 'mycrowdcharger_api', "local_time": time.strftime("%H:%M:%S") , "location": 'London, UK', 
-      "contributors": 'https://github.com/sdesyllas', 'device' : 'Raspberry Pi 3', 'OS': 'Raspbian / Debian 8.0 (Jessie)'}
+      "contributors": 'https://github.com/sdesyllas', 'device' : 'Raspberry Pi 3', 'OS': 'Raspbian / Debian 8.0 (Jessie)',
+      'python_version': sys.version_info}
   return jsonify({'result' : output})
 
 @app.route('/device', methods=['GET'])
