@@ -16,7 +16,7 @@ with app.app_context():
 
 @app.route('/ping', methods=['GET'])
 def ping_service():
-  output.append({'service' : 'mycrowdcharger_api', time.strftime("%H:%M:%S"): , "location": 'London, UK', 
+  output.append({'service' : 'mycrowdcharger_api', time.strftime("%H:%M:%S") , "location": 'London, UK', 
       "contributors": 'https://github.com/sdesyllas'})
   return jsonify({'result' : output})
 
