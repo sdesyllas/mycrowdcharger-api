@@ -5,6 +5,7 @@ from flask import abort
 from flask_pymongo import PyMongo
 from pymongo import GEO2D
 from bson.son import SON
+import time
 
 app = Flask(__name__)
 with app.app_context():
@@ -13,6 +14,11 @@ with app.app_context():
   mongo = PyMongo(app)
   mongo.db.devices.create_index([("loc", GEO2D)])
 
+@app.route('/ping', methods=['GET'])
+def ping_service():
+  output.append({'service' : 'mycrowdcharger_api', time.strftime("%H:%M:%S"): , "location": 'London, UK', 
+      "contributors": 'https://github.com/sdesyllas'})
+  return jsonify({'result' : output})
 
 @app.route('/device', methods=['GET'])
 def get_all_devices():
