@@ -17,7 +17,7 @@ with app.app_context():
 @app.route('/ping', methods=['GET'])
 def ping_service():
   output = {'service' : 'mycrowdcharger_api', "local_time": time.strftime("%H:%M:%S") , "location": 'London, UK', 
-      "contributors": 'https://github.com/sdesyllas', 'device' : 'Raspberry Pi 3', '': 'OS' 'Raspbian / Debian 8.0 (Jessie)'}
+      "contributors": 'https://github.com/sdesyllas', 'device' : 'Raspberry Pi 3', 'OS': 'Raspbian / Debian 8.0 (Jessie)'}
   return jsonify({'result' : output})
 
 @app.route('/device', methods=['GET'])
