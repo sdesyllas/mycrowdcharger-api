@@ -8,3 +8,16 @@ Both finding a power outlet and a charger, or even a powerbank is usually diffic
 This thesis work depends on crowdsourcing and finding a sufficient number of peers to contribute to a network based on exchanging spare energy of mobile phones. This is mostly a mobile app project, however, the implementation depends also on the available hardware technology (wired or wireless battery energy transfer, mobile devices supporting such an option).
 
 This is a Thesis project for University of Piraeus supervised by Lecturer Efthimios Alepis
+
+# Prerequisites
+```
+$ pip install Flask
+```
+
+```
+$ pip install pymongo
+```
+
+```
+$ pip install Flask-pymongo
+```
