@@ -11,7 +11,7 @@ import sys
 app = Flask(__name__)
 with app.app_context():
   app.config['MONGO_DBNAME'] = 'mycrowdcharger'
-  app.config['MONGO_URI'] = 'mongodb://spyros.hopto.org:27017/mycrowdcharger'
+  app.config['MONGO_URI'] = 'mongodb://nekomata.hopto.org:27017/mycrowdcharger'
   mongo = PyMongo(app)
   mongo.db.devices.create_index([("loc", GEO2D)])
 
