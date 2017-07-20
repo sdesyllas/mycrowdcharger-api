@@ -7,6 +7,8 @@ from pymongo import GEO2D
 from bson.son import SON
 import time
 import sys
+import logging
+from logging.handlers import RotatingFileHandler
 
 app = Flask(__name__)
 with app.app_context():
@@ -20,6 +22,7 @@ def ping_service():
   output = {'service' : 'mycrowdcharger_api', "local_time": time.strftime("%H:%M:%S") , "location": 'London, UK', 
       "contributors": 'https://github.com/sdesyllas', 'device' : 'Raspberry Pi 3', 'OS': 'Raspbian / Debian 8.0 (Jessie)',
       'python_version': sys.version_info}
+  app.logger.info('Application up and running :)')
   return jsonify({'result' : output})
 
 @app.route('/device', methods=['GET'])
@@ -148,6 +151,13 @@ def get_nearby_devices_by_device_name(name):
     output.append({'name' : doc['name'], 'loc' : doc['loc'], "battery_level": doc['battery_level'], 
       "contributions": doc['contributions'], "nickname": doc['nickname']})
   return jsonify({'result' : output})
-  
+
+
+def config_logger():
+    handler = RotatingFileHandler('api.log', maxBytes=10000, backupCount=1)
+    handler.setLevel(logging.INFO)
+    app.logger.addHandler(handler)
+
 if __name__ == '__main__':
+    config_logger()
     app.run(port=8000, debug=True)
