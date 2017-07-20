@@ -12,11 +12,18 @@ from logging.handlers import RotatingFileHandler
 
 
 app = Flask(__name__)
+
+def config_logger():
+    handler = RotatingFileHandler('api.log', maxBytes=10000, backupCount=1)
+    handler.setLevel(logging.INFO)
+    app.logger.addHandler(handler)
+    
 with app.app_context():
   app.config['MONGO_DBNAME'] = 'mycrowdcharger'
   app.config['MONGO_URI'] = 'mongodb://127.0.0.1:27017/mycrowdcharger'
   mongo = PyMongo(app)
   mongo.db.devices.create_index([("loc", GEO2D)])
+  config_logger()
 
 @app.route('/ping', methods=['GET'])
 def ping_service():
@@ -153,12 +160,5 @@ def get_nearby_devices_by_device_name(name):
       "contributions": doc['contributions'], "nickname": doc['nickname']})
   return jsonify({'result' : output})
 
-
-def config_logger():
-    handler = RotatingFileHandler('api.log', maxBytes=10000, backupCount=1)
-    handler.setLevel(logging.INFO)
-    app.logger.addHandler(handler)
-
 if __name__ == '__main__':
-    config_logger()
     app.run(port=8000, debug=True)
