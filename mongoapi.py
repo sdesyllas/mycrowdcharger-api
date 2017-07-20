@@ -23,7 +23,6 @@ with app.app_context():
   app.config['MONGO_URI'] = 'mongodb://127.0.0.1:27017/mycrowdcharger'
   mongo = PyMongo(app)
   mongo.db.devices.create_index([("loc", GEO2D)])
-  config_logger()
 
 @app.route('/ping', methods=['GET'])
 def ping_service():
@@ -161,4 +160,5 @@ def get_nearby_devices_by_device_name(name):
   return jsonify({'result' : output})
 
 if __name__ == '__main__':
+    config_logger()
     app.run(port=8000, debug=True)
