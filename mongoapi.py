@@ -7,6 +7,9 @@ from pymongo import GEO2D
 from bson.son import SON
 import time
 import sys
+import logging
+from logging.handlers import RotatingFileHandler
+
 
 app = Flask(__name__)
 with app.app_context():
@@ -20,6 +23,7 @@ def ping_service():
   output = {'service' : 'mycrowdcharger_api', "local_time": time.strftime("%H:%M:%S") , "location": 'London, UK', 
       "contributors": 'https://github.com/sdesyllas', 'device' : 'Raspberry Pi 3', 'OS': 'Raspbian / Debian 8.0 (Jessie)',
       'python_version': sys.version_info}
+  app.logger.info('Application up and running :)')
   return jsonify({'result' : output})
 
 @app.route('/device', methods=['GET'])
@@ -54,6 +58,7 @@ def add_device():
     output = "device already registered"
   else:
     battery_level = request.json['battery_level']
+    app.logger.info('register name:%s nickname:%s loc:%s battery_level:%s', name, nickname, loc, battery_level)
     device_id = device.insert({'name': name, 'battery_level': battery_level, 
       'loc' : loc, "contributions": 1, "nickname": nickname })
     new_device = device.find_one({'_id': device_id })
@@ -66,9 +71,8 @@ def refresh_device():
   device = mongo.db.devices
   name = request.json['name']
   loc = request.json['loc']
-
   battery_level = request.json['battery_level']
-
+  app.logger.info('refresh_device name:%s loc:%s battery_level:%s', name, loc, battery_level)
   saved_device = device.find_one({'name' : name})
   if saved_device is not None:
     saved_device['loc'] = loc
@@ -148,6 +152,13 @@ def get_nearby_devices_by_device_name(name):
     output.append({'name' : doc['name'], 'loc' : doc['loc'], "battery_level": doc['battery_level'], 
       "contributions": doc['contributions'], "nickname": doc['nickname']})
   return jsonify({'result' : output})
-  
+
+
+def config_logger():
+    handler = RotatingFileHandler('api.log', maxBytes=10000, backupCount=1)
+    handler.setLevel(logging.INFO)
+    app.logger.addHandler(handler)
+
 if __name__ == '__main__':
+    config_logger()
     app.run(port=8000, debug=True)
