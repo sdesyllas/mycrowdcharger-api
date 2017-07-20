@@ -10,6 +10,7 @@ import sys
 import logging
 from logging.handlers import RotatingFileHandler
 
+
 app = Flask(__name__)
 with app.app_context():
   app.config['MONGO_DBNAME'] = 'mycrowdcharger'
@@ -57,6 +58,7 @@ def add_device():
     output = "device already registered"
   else:
     battery_level = request.json['battery_level']
+    app.logger.info('register name:%s nickname:%s loc:%s battery_level:%s', name, nickname, loc, battery_level)
     device_id = device.insert({'name': name, 'battery_level': battery_level, 
       'loc' : loc, "contributions": 1, "nickname": nickname })
     new_device = device.find_one({'_id': device_id })
@@ -69,9 +71,8 @@ def refresh_device():
   device = mongo.db.devices
   name = request.json['name']
   loc = request.json['loc']
-
   battery_level = request.json['battery_level']
-
+  app.logger.info('refresh_device name:%s loc:%s battery_level:%s', name, loc, battery_level)
   saved_device = device.find_one({'name' : name})
   if saved_device is not None:
     saved_device['loc'] = loc
