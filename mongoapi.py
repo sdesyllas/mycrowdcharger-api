@@ -52,6 +52,17 @@ def get_one_device(name):
     output = "No such name"
   return jsonify({'result' : output})
 
+@app.route('/device/<name>', methods=['DELETE'])
+def delete_one_device(name):
+  device = mongo.db.devices
+  s = device.find_one({'name' : name})
+  if s:
+    device.remove({"_id": s['_id']})
+    output = "Device with _id:"+str(s['_id'])+" deleted"
+    return jsonify({'result' : output})
+  else:
+    abort(404)
+
 @app.route('/register', methods=['POST'])
 def add_device():
   #mongo.db.devices.create_index([("loc", GEO2D)])
