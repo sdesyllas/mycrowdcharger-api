@@ -162,7 +162,7 @@ def get_nearby_devices_by_device_name(name):
     abort(404)
 
   loc = new_device['loc']
-  query = {"loc": SON([("$near", loc), ("$maxDistance", 0.1)]), "name" : SON([("$ne", name)])}
+  query = {"loc": SON([("$near", loc), ("$maxDistance", 0.005)]), "name" : SON([("$ne", name)])}
   #query = {"loc": SON([("$near", loc)])}
   output = []
   for doc in device.find(query).limit(10):
